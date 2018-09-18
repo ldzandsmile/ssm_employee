@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldz.mapper.DepartmentMapper">
+	<resultMap id="BaseResultMap" type="com.ldz.model.Department">
+		<id column="department_id" jdbcType="INTEGER" property="departmentId" />
+		<result column="department_name" jdbcType="VARCHAR" property="departmentName" />
+	</resultMap>
+
+	<resultMap id="BaseResultMapAll" type="com.ldz.model.Department">
+		<id column="department_id" jdbcType="INTEGER" property="departmentId" />
+		<result column="department_name" jdbcType="VARCHAR" property="departmentName" />
+		<collection property="employeeList" ofType="com.ldz.model.Employee">
+			<id column="employee_id" jdbcType="INTEGER" property="employeeId" />
+			<result column="employee_name" jdbcType="VARCHAR" property="employeeName" />
+			<result column="employee_email" jdbcType="VARCHAR" property="employeeEmail" />
+			<result column="employee_departmentId" jdbcType="INTEGER" property="employeeDepartmentid" />
+		</collection>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		department_id, department_name
+	</sql>
+
+	<sql id="Base_Column_List_All">
+		d.department_id, d.department_name, e.employee_id,
+		e.employee_name, e.employee_email, e.employee_departmentId
+	</sql>
+
+	<select id="selectDepartments" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from department
+	</select>
+	
+	<select id="selectAll" resultMap="BaseResultMapAll">
+		select
+		<include refid="Base_Column_List_All" />
+		from department d, employee e 
+		where
+		e.employee_departmentId = d.department_id
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from department
+		where department_id = #{departmentId,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectByPrimaryKeyAll" parameterType="java.lang.Integer"
+		resultMap="BaseResultMapAll">
+		select
+		<include refid="Base_Column_List_All" />
+		from department d, employee e
+		where d.department_id =
+		#{departmentId,jdbcType=INTEGER}
+			and e.employee_departmentId = d.department_id
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		department
+		where department_id = #{departmentId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.ldz.model.Department">
+		insert into department
+		(department_id, department_name)
+		values
+		(#{departmentId,jdbcType=INTEGER},
+		#{departmentName,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.ldz.model.Department">
+		insert into department
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="departmentId != null">
+				department_id,
+			</if>
+			<if test="departmentName != null">
+				department_name,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="departmentId != null">
+				#{departmentId,jdbcType=INTEGER},
+			</if>
+			<if test="departmentName != null">
+				#{departmentName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.ldz.model.Department">
+		update department
+		<set>
+			<if test="departmentName != null">
+				department_name = #{departmentName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where department_id = #{departmentId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.ldz.model.Department">
+		update department
+		set department_name = #{departmentName,jdbcType=VARCHAR}
+		where
+		department_id = #{departmentId,jdbcType=INTEGER}
+	</update>
+</mapper>
