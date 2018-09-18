@@ -1,1 +1,1 @@
-# ssm_employee
+ssm简单增删改查，前端框架用的是bootstrap，数据库是mysql。其中附带sql语句
